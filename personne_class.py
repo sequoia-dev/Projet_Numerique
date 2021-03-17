@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Nov 23 14:29:44 2020
-
-@author: comecattin
+Definit la classe personne, la fonction permettant de calculer la force entre
+deux particules et la fonction permettant de calculer le tableau de force entre
+toutes les particules.
 """
 import numpy as np
 import itertools
@@ -62,43 +62,57 @@ def force(part1,part2,detection):
     Retourne la force de repulsion entre la particule et une autre.
     Les particule en dehors du rayon de detection sont negligées
     """
-    if part1.distance(part2) < detection:
-        Fx = -1/part1.distance(part2)[1]**7 * part1.m * part2.m * 0.5
-        Fy = -1/part1.distance(part2)[2]**7 * part1.m * part2.m * 0.5
+    if part1.distance(part2)[0] < detection:
+        
+        if part1.distance(part2)[1] == 0: #Eviter une division par 0
+            Fx = 0
+        else:
+            Fx = -1/part1.distance(part2)[1]**7 * part1.m * part2.m * 0.5
+        
+            
+        if part1.distance(part2)[2] == 0: #Eviter une division par 0
+            Fy = 0
+        else:
+            Fy = -1/part1.distance(part2)[2]**7 * part1.m * part2.m * 0.5
+            
         F = np.array([Fx,Fy])
+    
+    
     else :
         F = np.zeros(2)
+    
+    
     return F
 
-def tab_force(N):
+def tab_force(classe_tab,detection):
     """
-    Retourne le tableau de force entre N particules.
+    Retourne le tableau de force entre N particules = len(class_tab). 
+    class_tab est le tableau des objets particules. 
+    detecttion est le seuil de detection pour la force
     """
-    F_tab = np.zeros((N,N))
-    ls = np.arange(0,N)
+    F_tab_x = np.zeros((len(classe_tab),len(classe_tab)))
+    F_tab_y = np.zeros((len(classe_tab),len(classe_tab)))
+    ls = np.arange(0,len(classe_tab))
     couple = list(itertools.permutations(ls,2))
     for ij in couple:
         i = ij[0]
         j = ij[1]
-        F_tab[i,j] = force(part.num[i],part.num[j])
-        pass
+        F_tab_x[i,j] = force(classe_tab[i],classe_tab[j],detection)[0]
+        F_tab_y[i,j] = force(classe_tab[i],classe_tab[j],detection)[1]
+        
+    F_tab = np.array([F_tab_x,F_tab_y])
+        
+    return F_tab
+
+if __name__ == '__main__':
     
-        
-        
-        
-        
-        
+    part1 = personne(0,0,0,0,1,1,0)
+    part2 = personne(1,0,0,0,1,1,1)
+    part3 = personne(1,1,0,0,1,1,2)
     
-def change_vitesse(self,personne):
-    """
-    Change la vitesse de la particule quand il y a contact avec une autre
-    """
-    #Acceleration de la particule
-    self.a = 1/self.m * self.sum_force() 
-        
-def sum_force():
-    pass
-        
+    classe_tab = np.array([part1,part2,part3])
+    
+    F_tab = tab_force(classe_tab,10)
         
         
         
