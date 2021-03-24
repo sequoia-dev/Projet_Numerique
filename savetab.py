@@ -6,26 +6,29 @@ Permet de lire et d'écrire les tableau dans un fichier au fur et à mesure du t
 
 import numpy as np
 
-def savefile(tab, name='tab.txt'):
+def savefile(tab, name_pos='tab_pos.txt',name_vitesse='tab_vitesse.txt'):
     """
-    Sauvegarde le np.array tab dans le fichier name
+    Sauvegarde le np.array tab dans les fichier name_pos et name_vitesse
     """
-    with open(name,'a') as f:
-        f.write("\n")
-        np.savetxt(f,tab)
+    with open(name_pos,'a') as f_pos:
+        f_pos.write("\n")
+        pos = tab[:,0,:]
+        np.savetxt(f_pos,pos)
         
-def readfile(name='tab.txt'):
+    with open(name_vitesse,'a') as f_vitesse:
+        f_vitesse.write("\n")
+        vitesse = tab[:,1,:]
+        np.savetxt(f_vitesse,vitesse)
+        
+
+def readfile(name_pos='tab_pos.txt',name_vitesse='tab_vitesse.txt'):
     """
-    Retourne les tableaux contenus dans tab.txt, sauvegardés avec savefile
+    Retourne les tableaux contenus dans les tab.txt, sauvegardés avec savefile
     """
-    tab = np.loadtxt(name)
+    tab_pos = np.loadtxt(name_pos)
+    tab_vitesse = np.loadtxt(name_vitesse)
     
-    return tab
-
-
-
-
-
+    return tab_pos , tab_vitesse
 
 if __name__ == '__main__':
     a = np.arange(0,3)
