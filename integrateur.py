@@ -12,8 +12,8 @@ selon chaque axes. La forme du tableau est donc (n,2)"""
     sumF_tab=np.sum(F_tab,axis=2)
     n = len(classe_tab)
     a_tab= np.zeros((2,n))
-    for i in range(0,n-1):
-        a_tab[i,:] = sumF_tab[i,:]/classe_tab[i].m
+    for i in range(0,n):
+        a_tab[:,i] = sumF_tab[:,i]/classe_tab[i].m
         
     a_tab = np.reshape(a_tab,(n,2))
     return a_tab

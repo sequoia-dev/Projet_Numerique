@@ -7,8 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 
-def animate(i,tab_pos,nbr=20,R=1):
-    M=tab_pos[3*i:3*i+3]
+def animate(i,tab_pos,dt,t_fin,nbr=20,R=1,):
+    pas=int(t_fin/dt)
+    (npas,c)=np.shape(tab_pos)
+    n=int(npas/pas)
+    M=tab_pos[n*i:n*(i+1)]
     angles=np.linspace(0,2*np.pi,nbr)
     Lx=np.array([])
     Ly=np.array([])

@@ -6,6 +6,7 @@ deux particules et la fonction permettant de calculer le tableau de force entre
 toutes les particules.
 """
 import numpy as np
+import numpy.random as rd
 import itertools
 
 class personne:
@@ -103,6 +104,23 @@ def tab_force(classe_tab,detection):
     F_tab = np.array([F_tab_x,F_tab_y])
         
     return F_tab
+
+def initial(n,x=1,y=1,vx=1,vy=1,r=1,m=1):
+    PosVi_tab=rd.rand(n,2,2)
+    PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x
+    PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y
+    PosVi_tab[:,1,0]=PosVi_tab[:,1,0]*vx
+    PosVi_tab[:,1,1]=PosVi_tab[:,1,1]*vy
+    classe_tab=[]
+    j=0
+    for i in PosVi_tab:
+        
+        mi=rd.rand()*m + 0.1
+        ri=rd.rand()*r
+        classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,j)]
+        j=j+1
+    classe_tab=np.array(classe_tab)
+    return PosVi_tab , classe_tab
 
 if __name__ == '__main__':
     
