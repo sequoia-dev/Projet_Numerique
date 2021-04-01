@@ -113,14 +113,16 @@ def initial(n,x=1,y=1,vx=1,vy=1,r=1,m=1):
     PosVi_tab[:,1,1]=PosVi_tab[:,1,1]*vy
     classe_tab=[]
     j=0
+    R=np.zeros(n)
     for i in PosVi_tab:
         
         mi=rd.rand()*m + 0.1
         ri=rd.rand()*r
+        R[j]=ri
         classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,j)]
         j=j+1
     classe_tab=np.array(classe_tab)
-    return PosVi_tab , classe_tab
+    return PosVi_tab , classe_tab , R
 
 if __name__ == '__main__':
     

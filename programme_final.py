@@ -17,7 +17,7 @@ import numpy as np
 dt = 1
 n = 20
 
-PosVi_tab,classe_tab=initial(n,x=100,y=100)
+PosVi_tab , classe_tab , R =initial(n,x=100,y=100)
 
 PosViprec_tab = pos_ini(PosVi_tab, dt)
 
@@ -33,9 +33,11 @@ for i in t:
 # %%
 tab_pos , tab_vitesse = readfile()
 
+
 fig=plt.figure(1)
 fig.set_sizes=(10,10)
-plt.xlim(-1000,1000)
-plt.ylim(-1000,1000)
-ani = anim.FuncAnimation(fig, animate, frames=1000, blit=True, 
-                             interval=10, repeat=False,fargs = (tab_pos,dt,t_fin))
+ax = plt.axes(xlim=(-1000, 1000), ylim=(-1000, 1000))
+A=np.zeros(n) # Sert à donner la bonne dimension a X,Y avant que les données soit introduites. Ne pas le faire pose des problèmes de dimension de R.
+scat = ax.scatter(A, A, s=R , facecolors='none', edgecolors='blue')
+ani = anim.FuncAnimation(fig, animate, frames=int(t_fin/dt), blit=True, 
+                             interval=10, repeat=False,fargs = (tab_pos,dt,t_fin,scat,R))

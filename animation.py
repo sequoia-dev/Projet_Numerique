@@ -7,20 +7,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 
-def animate(i,tab_pos,dt,t_fin,nbr=20,R=1,):
+def animate(i,tab_pos,dt,t_fin,scater, R):
+    scat=scater
     pas=int(t_fin/dt)
     (npas,c)=np.shape(tab_pos)
     n=int(npas/pas)
     M=tab_pos[n*i:n*(i+1)]
-    angles=np.linspace(0,2*np.pi,nbr)
-    Lx=np.array([])
-    Ly=np.array([])
-    for J in M:
-        (xc,yc)=J
-        Lx=np.hstack((Lx,R*np.cos(angles)+xc))
-        Ly=np.hstack((Ly,R*np.sin(angles)+yc))
-    
-    return plt.plot(Lx,Ly,'.',color='r')
+    scat.set_offsets(M)
+    return scat,
 
 if __name__ == '__main__':
 
