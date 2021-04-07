@@ -9,29 +9,28 @@ from personne_class import *
 import numpy as np
 
 class mur:
-    def __init__(self,f):
+    def __init__(self,f,vect):
         """
         f est la fonction représentative en fonction de x et y du mur
         """
         self.f = f
+        self.vect=vect
         
     def collision(self,particule):
         """
         Retourne true si la particule touche le mur
         """
-        answer = self.f(particule.x) == particule.y + particule.r
+        answer = self.f(particule.x , particule.y ) #== particule.y + particule.r
         return answer        
         
         
-    def change_v_part(self,particule,dpos = np.array([1e-3,1e-3])):
+    def change_v_part(self,particule):
         """
         Change la vitesse la particule en lui supprimant sa composante 
         perpendiculaire au mur
         """
         
-        vect_mury = self.f(particule.x + dpos[0]) - self.f(particule.x)
-        vect_murx = dpos[0]
-        vect_mur = np.array([vect_murx,vect_mury])
+        vect_mur = self.vect
         
         v_part = np.array([particule.vx , particule.vy])
         

@@ -75,9 +75,8 @@ def force(part1,part2,detection):
             Fy = 0
         else:
             Fy = -1/part1.distance(part2)[2]**7 * part1.m * part2.m * 0.5
-            
+                
         F = np.array([Fx,Fy])
-    
     
     else :
         F = np.zeros(2)
@@ -100,7 +99,6 @@ def tab_force(classe_tab,detection):
         j = ij[1]
         F_tab_x[i,j] = force(classe_tab[i],classe_tab[j],detection)[0]
         F_tab_y[i,j] = force(classe_tab[i],classe_tab[j],detection)[1]
-        
     F_tab = np.array([F_tab_x,F_tab_y])
         
     return F_tab
@@ -116,7 +114,7 @@ def initial(n,x=1,y=1,vx=1,vy=1,r=1,m=1):
     R=np.zeros(n)
     for i in PosVi_tab:
         
-        mi=rd.rand()*m + 0.1
+        mi=rd.rand()*m + 1
         ri=rd.rand()*r
         R[j]=ri
         classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,j)]
