@@ -27,7 +27,7 @@ class mur:
         return answer        
     
         
-    def change_v_part(self,particule):
+    def change_v_part(self,v):
         """
         Change la vitesse la particule en lui supprimant sa composante 
         perpendiculaire au mur sauf si il est dans la zone de sortie
@@ -36,9 +36,7 @@ class mur:
         
         vect_mur = self.vect
         
-        v_part = np.array([particule.vx , particule.vy])
-        
-        prod_sca = np.vdot(vect_mur,v_part)
+        prod_sca = np.vdot(vect_mur,v)
         
         new_v = prod_sca * vect_mur
         
@@ -57,7 +55,7 @@ class mur:
             F = np.array([0,0])
             
         else :
-            F = 10 * v/norm_v
+            F = 10*v/norm_v
             
         return F
     

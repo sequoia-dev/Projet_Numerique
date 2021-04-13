@@ -19,7 +19,7 @@ class personne:
     masse m
     numéro de particule
     """
-    def __init__(self,x,y,vx,vy,r,m,num):
+    def __init__(self,x,y,vx,vy,r,m,v_max,num):
         """Définition des parametre initiaux"""
         self.x = x
         self.y = y
@@ -27,6 +27,7 @@ class personne:
         self.vy = vy
         self.r = r
         self.m = m
+        self.v_max = v_max
         self.num = num
         
     def distance(self,autre):
@@ -80,8 +81,13 @@ def force(part1,part2,detection):
     
     else :
         F = np.zeros(2)
+        
+    norm_F=np.linalg.norm(F)
     
-    
+    if norm_F>10:
+        
+        F=F/norm_F
+        
     return F
 
 def tab_force(classe_tab,detection):
@@ -93,17 +99,20 @@ def tab_force(classe_tab,detection):
     F_tab_x = np.zeros((len(classe_tab),len(classe_tab)))
     F_tab_y = np.zeros((len(classe_tab),len(classe_tab)))
     ls = np.arange(0,len(classe_tab))
-    couple = list(itertools.permutations(ls,2))
+    #couple = list(itertools.permutations(ls,2)) 
+    couple = list(itertools.combinations(ls,2))
     for ij in couple:
         i = ij[0]
         j = ij[1]
         F_tab_x[i,j] = force(classe_tab[i],classe_tab[j],detection)[0]
+        F_tab_x[j,i] = - F_tab_x[i,j]
         F_tab_y[i,j] = force(classe_tab[i],classe_tab[j],detection)[1]
+        F_tab_y[j,i] = - F_tab_y[i,j]
     F_tab = np.array([F_tab_x,F_tab_y])
         
     return F_tab
 
-def initial(n,x=1,y=1,vx=1,vy=1,r=1,m=1):
+def initial(n,x=1,y=1,vx=1,vy=1,m=0.5):
     PosVi_tab=rd.rand(n,2,2)
     PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x
     PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y
@@ -114,10 +123,11 @@ def initial(n,x=1,y=1,vx=1,vy=1,r=1,m=1):
     R=np.zeros(n)
     for i in PosVi_tab:
         
-        mi=rd.rand()*m + 1
-        ri=rd.rand()*r
+        mi=rd.rand()*m + 0.5
+        ri=mi
+        v_max_i=1/mi
         R[j]=ri
-        classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,j)]
+        classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,v_max_i,j)]
         j=j+1
     classe_tab=np.array(classe_tab)
     return PosVi_tab , classe_tab , R

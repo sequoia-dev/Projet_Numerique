@@ -61,14 +61,9 @@ t_fin = 100
 t = np.linspace(0,t_fin,int(t_fin/dt))
 
 #Effectuer la simulation
-for i in t:
-    #Calcul du tableau des forces
-    F_tab_part = tab_force(classe_tab,100) #Tableau des forces entre particules
-    #A intetegrer dans l'integrateur
-    F_tab_mur = tab_force_mur(mur_class_tab,classe_tab) #Tableau des forces de sortie
-    
+for i in t: 
     #Calcul des nouvelles position
-    PosViprec_tab , PosVi_tab = change_posvi(PosVi_tab,PosViprec_tab,F_tab_part,classe_tab,mur_class_tab,dt,n)
+    PosViprec_tab , PosVi_tab = change_posvi(PosVi_tab,PosViprec_tab,classe_tab,mur_class_tab,dt,n)
     #Sauvegarde des nouvelles positions
     savefile(PosVi_tab)
     
@@ -97,5 +92,5 @@ plt.plot(M,N)
 
 #Animation
 ani = anim.FuncAnimation(fig, animate, frames=int(t_fin/dt), blit=True, 
-                             interval=0.1, repeat=False , save_count= int(t_fin/dt) , fargs = (tab_pos,dt,t_fin,scat,R))
+                             interval=100, repeat=False , save_count= int(t_fin/dt) , fargs = (tab_pos,dt,t_fin,scat,R))
 
