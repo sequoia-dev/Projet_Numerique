@@ -93,12 +93,15 @@ def tab_force(classe_tab,detection):
     F_tab_x = np.zeros((len(classe_tab),len(classe_tab)))
     F_tab_y = np.zeros((len(classe_tab),len(classe_tab)))
     ls = np.arange(0,len(classe_tab))
-    couple = list(itertools.permutations(ls,2))
+    #couple = list(itertools.permutations(ls,2)) 
+    couple = list(itertools.combinations(ls,2))
     for ij in couple:
         i = ij[0]
         j = ij[1]
         F_tab_x[i,j] = force(classe_tab[i],classe_tab[j],detection)[0]
+        F_tab_x[j,i] = - F_tab_x[i,j]
         F_tab_y[i,j] = force(classe_tab[i],classe_tab[j],detection)[1]
+        F_tab_y[j,i] = - F_tab_y[i,j]
     F_tab = np.array([F_tab_x,F_tab_y])
         
     return F_tab
