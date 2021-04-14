@@ -39,7 +39,8 @@ class personne:
     
     def superpose(self,autre):
         """Retourne True si les deux particules se superposent"""
-        answer = self.distance(autre) < self.r + autre.r
+        
+        answer = self.distance(autre)[0] < self.r + autre.r
         return answer
     
 
@@ -112,23 +113,20 @@ def tab_force(classe_tab,detection):
         
     return F_tab
 
-def initial(n,x=1,y=1,vx=1,vy=1,m=0.5):
+def initial(n,x,y,vm=0.2,r=0.3):
     PosVi_tab=rd.rand(n,2,2)
     PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x
     PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y
-    PosVi_tab[:,1,0]=PosVi_tab[:,1,0]*vx
-    PosVi_tab[:,1,1]=PosVi_tab[:,1,1]*vy
+    
     classe_tab=[]
-    j=0
     R=np.zeros(n)
-    for i in PosVi_tab:
+    for num_part , PosVi in enumerate(PosVi_tab):
         
-        mi=rd.rand()*m + 0.5
-        ri=mi
-        v_max_i=1/mi
-        R[j]=ri
-        classe_tab=classe_tab+[personne(i[0,0],i[0,1],i[1,0],i[1,1],ri,mi,v_max_i,j)]
-        j=j+1
+        ri=rd.rand()*r+0.2
+        mi=ri
+        v_max_i=rd.rand()*vm+0.1
+        R[num_part]=ri
+        classe_tab=classe_tab+[personne(PosVi[0,0],PosVi[0,1],PosVi[1,0],PosVi[1,1],ri,mi,v_max_i,num_part)]
     classe_tab=np.array(classe_tab)
     return PosVi_tab , classe_tab , R
 
