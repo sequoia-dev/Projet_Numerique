@@ -12,8 +12,15 @@ from mur_class import *
 import matplotlib.animation as anim
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 # %%initialisation
+#Suppression des anciens fichiers
+ans_user = input('Voulez-vous supprimer les anciens fichiers de position ? y/n    ')
+if ans_user == 'y':
+    os.remove('tab_pos.txt')
+    os.remove('tab_vitesse.txt')
+    print('Fichiers supprimés.')
 
 #interval de temps
 dt = 0.1
@@ -44,7 +51,7 @@ vect4=np.array([0,1])
 sortie1 = np.array([[5,6],[0,0.2]])
 sortie2 = np.array([[5,6],[9.8,10]])
 
-mur_class_tab=np.array([mur(f1,vect1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4,sortie2)])
+mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4,sortie2)])
 
 #Initialisation des particules
 PosVi_tab , classe_tab , R =initial(n,x=10,y=10)
@@ -59,6 +66,7 @@ PosViprec_tab = pos_ini(PosVi_tab, dt)
 #Définition du temps de fin de simulation
 t_fin = 40
 #Discrétisation du temps
+#Peut être faire un tant qu'il y a des particules
 t = np.linspace(0,t_fin,int(t_fin/dt))
 
 #Effectuer la simulation
@@ -78,8 +86,8 @@ for i in t:
                 #Supprime la particule de classe_tab
                 classe_tab = np.delete(classe_tab,num-1)
                 #Supprime la ligne lié a la position de la particule
-                PosViprec_tab = np.delete(PosViprec_tab,num,0)
-                PosVi_tab = np.delete(PosVi_tab,num,0)
+                PosViprec_tab = np.delete(PosViprec_tab,num-1,0)
+                PosVi_tab = np.delete(PosVi_tab,num-1,0)
     n_liste.append(n_inside)
     n = n_inside
     
@@ -108,5 +116,14 @@ plt.plot(M,N)
 
 #Animation
 ani = anim.FuncAnimation(fig, animate, frames=int(t_fin/dt), blit=True, 
-                             interval=100, repeat=False , save_count= int(t_fin/dt) , fargs = (tab_pos,dt,t_fin,scat,R,n_liste))
+                             interval=100, repeat=False , 
+                             save_count= int(t_fin/dt) , 
+                             fargs = (tab_pos,dt,t_fin,scat,R,n_liste))
+
+#Sauvegarde de l'animation en fichier .mp4
+ans_user = input('Sauvegarder animation ? y/n    ')
+if ans_user == 'y':
+    Writer = anim.writers['ffmpeg']
+    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+    ani.save('simulation.mp4', writer=writer)
 
