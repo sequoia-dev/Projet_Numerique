@@ -47,9 +47,8 @@ class mur:
         Retourne la force qu'exerce la sortie sur une particule
         """
         
-        pos_sortie = [np.mean(self.sortie[0]) , np.mean(self.sortie[1])]
-        v = np.array([pos_sortie[0]-particule.x,pos_sortie[1]-particule.y])
-        norm_v = np.linalg.norm(v)
+        
+        v , norm_v = self.d_mur(particule)
         
         if norm_v == 0:
             F = np.array([0,0])
@@ -58,6 +57,27 @@ class mur:
             F = 10*v/norm_v
             
         return F
+    
+    def d_mur(self,particule):
+        """
+        Mesure la distance entre la particule et la sortie et le vecteur les rejoignant
+        """
+        
+        pos_sortie = [np.mean(self.sortie[0]) , np.mean(self.sortie[1])]
+        v = np.array([pos_sortie[0]-particule.x,pos_sortie[1]-particule.y])
+        norm_v = np.linalg.norm(v)
+        
+        return v , norm_v
+    
+    def handle_part_exit(self,part):
+        """
+        Retourne True si la particule sort
+        """
+        if np.all(self.sortie != None):
+            if part.x >= self.sortie[0,0] and part.x <= self.sortie[0,1] and part.y >= self.sortie[1,0] and part.y <= self.sortie[1,1]:
+                return True
+        else: return False
+    
     
 def tab_force_mur(mur_class_tab,classe_tab):
     """
@@ -80,9 +100,9 @@ def tab_force_mur(mur_class_tab,classe_tab):
                 d.append([distance,mur])
                 
         d = np.array(d)
-        i_min = np.argmin(d,axis=0)
+        i_min = np.argmin(d[:,0])
                 
-        mur_proche = d[i_min[0]][1]
+        mur_proche = d[i_min][1]
         
         F = np.array([mur_proche.force_exit(part)[0],mur_proche.force_exit(part)[1]])
         F_tab[num_part] = F
@@ -95,7 +115,7 @@ def tab_force_mur(mur_class_tab,classe_tab):
     
 if __name__ == '__main__':
     
-    part = personne(2,2,1,1,1,1,0)
+    part = personne(2,2,1,1,1,1,0,1)
     
     def f1(x,y) :
         return y>=9.9
@@ -122,10 +142,14 @@ if __name__ == '__main__':
     mur_class_tab=np.array([mur(f1,vect1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4,sortie)])
     
     tab_ans = []
+    tab_exit = []
     for mur in mur_class_tab:
         ans = mur.collision(part)
         tab_ans.append(ans)
+        exit_part = mur.handle_part_exit(part)
+        tab_exit.append(exit_part)
         
     F_tab = tab_force_mur(mur_class_tab,[part])
+    
     
     

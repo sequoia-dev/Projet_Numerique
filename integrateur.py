@@ -47,7 +47,7 @@ def change_posvi(PosVi_tab,PosViprec_tab,classe_tab,mur_class_tab, dt,n):
         
         i=i+1
     X=PosVi_tab[:,0,:]+dt*Vmoy
-    X , V = np.reshape(X,(20,1,2)) , np.reshape(V,(20,1,2))
+    X , V = np.reshape(X,(n,1,2)) , np.reshape(V,(n,1,2))
     PosViprec_tab , PosVi_tab = PosVi_tab , np.concatenate((X,V),axis=1)
     i=0
     for j in classe_tab:

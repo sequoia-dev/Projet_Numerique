@@ -7,12 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 
-def animate(i,tab_pos,dt,t_fin,scater, R):
+def animate(i,tab_pos,dt,t_fin,scater, R,n_liste):
     scat=scater
     pas=int(t_fin/dt)
     (npas,c)=np.shape(tab_pos)
-    n=int(npas/pas)
-    M=tab_pos[n*i:n*(i+1)]
+    M=tab_pos[int(np.sum(n_liste[0:i])):int(np.sum(n_liste[0:i]))+n_liste[i]]
     scat.set_offsets(M)
     return scat,
 
