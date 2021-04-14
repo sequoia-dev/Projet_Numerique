@@ -9,9 +9,11 @@ from personne_class import *
 import numpy as np
 
 class mur:
-    def __init__(self,f,vect,sortie):
+    def __init__(self,f,vect,sortie = None):
         """
         f est la fonction représentative en fonction de x et y du mur
+        vect est le vecteur directeur du mur
+        sortie est de la forme np.array([[xmin,xmax],[ymin,ymax]])
         """
         self.f = f
         self.vect=vect
@@ -25,7 +27,7 @@ class mur:
         return answer        
     
         
-    def change_v_part(self,particule):
+    def change_v_part(self,v):
         """
         Change la vitesse la particule en lui supprimant sa composante 
         perpendiculaire au mur sauf si il est dans la zone de sortie
@@ -34,9 +36,7 @@ class mur:
         
         vect_mur = self.vect
         
-        v_part = np.array([particule.vx , particule.vy])
-        
-        prod_sca = np.vdot(vect_mur,v_part)
+        prod_sca = np.vdot(vect_mur,v)
         
         new_v = prod_sca * vect_mur
         
@@ -48,51 +48,54 @@ class mur:
         """
         
         pos_sortie = [np.mean(self.sortie[0]) , np.mean(self.sortie[1])]
+        v = np.array([pos_sortie[0]-particule.x,pos_sortie[1]-particule.y])
+        norm_v = np.linalg.norm(v)
         
-        d = np.sqrt((pos_sortie[0]-particule.x)**2+(pos_sortie[1]-particule.y)**2)
-        
-        if d == 0:
+        if norm_v == 0:
             F = np.array([0,0])
             
         else :
-            F = np.array([10,10])
+            F = 10*v/norm_v
             
         return F
     
+def tab_force_mur(mur_class_tab,classe_tab):
+    """
+    Retourne le tableau de force sur chaque particule des mur
+    tableau de taille (nbr_part,2)
+    Reflechir au sens de cette fonction, que ce passe-t-il si la part est au centre ? Elle doit prendre la sortie la plus proche et si elles sont toutes a distances = alors faire un choix aléatoire
+    """
     
-        
-        
-        
-        
-        
-        
+    F_tab = np.zeros([len(classe_tab),2])
     
-    # def sortie(self,pos):
-    #     """
-    #     Defini la sortie du mur. La position pos est (xmin,xmax,ymin,ymax)
-    #     le domaine de la sortie. La force de sortie est appliquée au point
-    #     au centre de la sortie
-    #     """
+    for num_part, part in enumerate(classe_tab):
+        #d = np.array([100 * np.ones(len(mur_class_tab)),mur_class_tab])
+        #np.reshape(d,(len(mur_class_tab),2))
+        d = []
+        for num_mur, mur in enumerate(mur_class_tab):
+            if np.any(mur.sortie != None) == True:
+                pos_sortie = [np.mean(mur.sortie[0]) , np.mean(mur.sortie[1])]
+                v = np.array([pos_sortie[0]-part.x,pos_sortie[1]-part.y])
+                distance = np.linalg.norm(v)
+                d.append([distance,mur])
+                
+        d = np.array(d)
+        i_min = np.argmin(d,axis=0)
+                
+        mur_proche = d[i_min[0]][1]
         
+        F = np.array([mur_proche.force_exit(part)[0],mur_proche.force_exit(part)[1]])
+        F_tab[num_part] = F
+                
         
-        
-        
-        
-        
-        
+    return F_tab
+    
+                
         
     
 if __name__ == '__main__':
     
-    def f(x):
-        y = 3
-        return y
-    
-    mur_test = mur(f)
     part = personne(2,2,1,1,1,1,0)
-    collision = mur_test.collision(part)
-    if collision == True:
-        v = mur_test.change_v_part(part)
     
     def f1(x,y) :
         return y>=9.9
@@ -116,6 +119,13 @@ if __name__ == '__main__':
     
     sortie = np.array([[5,6],[0,0]])
     
-    mur_class_tab=np.array([mur(f1,vect1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4)])
+    mur_class_tab=np.array([mur(f1,vect1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4,sortie)])
+    
+    tab_ans = []
+    for mur in mur_class_tab:
+        ans = mur.collision(part)
+        tab_ans.append(ans)
+        
+    F_tab = tab_force_mur(mur_class_tab,[part])
     
     

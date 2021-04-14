@@ -3,41 +3,51 @@
 Codage d'une première version de l'intégrateur des positions et des vitesses
 """
 import numpy as np
+from mur_class import *
+from personne_class import *
 
-def acceleration(F_tab,classe_tab):
+def acceleration(sumF_tab,classe_tab,n):
     
     """Calcul un tableau contenant les accélérations de chaque particules
 selon chaque axes. La forme du tableau est donc (n,2)"""
-        
-    sumF_tab=np.sum(F_tab,axis=2)
-    n = len(classe_tab)
-    a_tab= np.zeros((2,n))
+    
+    a_tab= np.zeros((n,2))
     for i in range(0,n):
-        a_tab[:,i] = sumF_tab[:,i]/classe_tab[i].m
+        a_tab[i,:] = sumF_tab[i,:]/classe_tab[i].m
         
-    a_tab = np.reshape(a_tab,(n,2))
     return a_tab
 
-def change_posvi(PosVi_tab,PosViprec_tab,F_tab,classe_tab,mur_class_tab, dt,n):
+def change_posvi(PosVi_tab,PosViprec_tab,classe_tab,mur_class_tab, dt,n):
     
     """Calcul les vitesses des particules au nouveau pas de temps"""
-    a_tab=acceleration(F_tab,classe_tab)
+    F_tab_part = tab_force(classe_tab,100) #Tableau des forces entre particules
+    sumF_tab=np.reshape(np.sum(F_tab_part,axis=2),(n,2))
+    F_tab_mur = tab_force_mur(mur_class_tab,classe_tab) #Tableau des forces de sortie
+    sumF_tab = sumF_tab + F_tab_mur
+    a_tab=acceleration(sumF_tab,classe_tab,n)
     V=PosViprec_tab[:,1,:] + 2*a_tab*dt
     i=0
+    Vtot=np.sqrt(V[:,0]**2+V[:,1]**2)
+    for j in V :
+        vm=classe_tab[i].v_max
+        Vtoti=Vtot[i]
+        if Vtoti > vm :
+           V[i,:]=j/Vtoti
+        i=i+1
+    Vmoy = (1/2)*(PosVi_tab[:,1,:]+V)
+    i=0
     for j in classe_tab :
+        vect=[]
         for k in mur_class_tab :
            if k.collision(j):
-              PosVi_tab[i,1,:]=k.change_v_part(j)
+              
+              V[i,:]=k.change_v_part(V[i])
+              Vmoy[i,:]=k.change_v_part(Vmoy[i])
+              
+        
         i=i+1
-    i=0
-    for j in V :
-        Vtot=np.sqrt(j[0]**2+j[1]**2)
-        if Vtot > 1 :
-            V[i,0] ,V[i,1] = j[0]/Vtot , j[1]/Vtot
-        i=i+1
-    X=PosVi_tab[:,0,:]+(dt/2)*(PosVi_tab[:,1,:]+V)
+    X=PosVi_tab[:,0,:]+dt*Vmoy
     X , V = np.reshape(X,(20,1,2)) , np.reshape(V,(20,1,2))
-    #PosViprec_tab , PosVi_tab = PosVi_tab , np.concatenate((np.reshape(2*PosVi_tab[:,0,:]-PosViprec_tab[:,0,:]+a_tab*dt**2,(n,1,2)),np.reshape(PosViprec_tab[:,1,:]+2*a_tab*dt,(n,1,2))),axis=1)
     PosViprec_tab , PosVi_tab = PosVi_tab , np.concatenate((X,V),axis=1)
     i=0
     for j in classe_tab:
