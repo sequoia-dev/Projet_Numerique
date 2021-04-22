@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Test avec 3 particules
+Simulation de la sortie de n personnes depuis une salle fermée vers une ou plusieurs
+sortie.
 """
+
+# %% Importation des librairies
 
 from personne_class import *
 from savetab import *
@@ -24,22 +27,22 @@ if ans_user == 'y':
     print('Fichiers supprimés.')
 
 #interval de temps
-dt = 0.1
+dt = 0.01
 #Nombre de particule
-n = 20
+n = 50
 
-#Définition des mur
-def f1(x,y) :
-    return y>=9.9
+#Définition des murs
+def f1(pers) :
+    return pers.y + pers.r >= 10
 
-def f2(x,y) :
-    return y<=0.1
+def f2(pers) :
+    return pers.y - pers.r <=0
 
-def f3(x,y) :
-    return x>=9.9
+def f3(pers) :
+    return pers.x + pers.r >=10
 
-def f4(x,y) :
-    return x<=0.1
+def f4(pers) :
+    return pers.x - pers.r <=0
 
 vect1=np.array([1,0])
 
@@ -49,49 +52,57 @@ vect3=np.array([0,1])
 
 vect4=np.array([0,1])
 
-sortie1 = np.array([[5,6],[0,0.1]])
-sortie2 = np.array([[5,6],[9.8,10]])
+sortie1 = np.array([[5,6],[0,0.5]])
+sortie2 = np.array([[5,6],[9.5,10]])
 
 mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4)])
 
-#Initialisation des particules
-PosVi_tab , classe_tab , R =initial(n,x=10,y=10)
+#Définition du centre de la salle
+centre=np.array([5,5])
 
-R=50*R
+#Initialisation des particules
+PosVi_tab , classe_tab , r = initial(n,x=8,y=8)
 
 #Sauvegarde des position initiales
 savefile(PosVi_tab)
 
-PosViprec_tab = pos_ini(PosVi_tab, dt)
-
 #Définition du temps de fin de simulation
-t_fin = 100
-#Discrétisation du temps
-#Peut être faire un tant qu'il y a des particules
-t = np.linspace(0,t_fin,int(t_fin/dt))
+t_fin = 10
 
-#Liste du nombre de particules
+#Liste du nombre de personne et du rayon des personnes
 n_liste = [n]
+R=[r]
 
 #Effectuer la simulation
-for i in t: 
-    #Calcul des nouvelles position
-    PosViprec_tab , PosVi_tab = change_posvi(PosVi_tab,PosViprec_tab,classe_tab,mur_class_tab,dt,n)
-    #Sauvegarde des nouvelles positions
-    savefile(PosVi_tab)
+p=0
+while n!=0 and p*dt<=t_fin : 
+    #Calcul des nouvelles positions
+    PosVi_tab = change_posvi(PosVi_tab,classe_tab,mur_class_tab,centre,dt,n)
     #Test de la distance à la sortie
     n_inside = n_liste[-1]
+    r_bis=r[:]
+    c=0
     for num , part in enumerate(classe_tab):
         for mur in mur_class_tab:
-            if mur.handle_part_exit(part) == True: #La particule sort
+            if mur.handle_part_exit(part) == True: #La personne sort
                 n_inside = n_inside - 1
-                #Supprime la particule de classe_tab
-                classe_tab = np.delete(classe_tab,num)
-                #Supprime la ligne lié a la position de la particule
-                PosViprec_tab = np.delete(PosViprec_tab,num,0)
-                PosVi_tab = np.delete(PosVi_tab,num,0)
+                #Supprime la personne de classe_tab
+                classe_tab = np.delete(classe_tab,num-c)
+                #Supprime la ligne lié a la position de la personne
+                PosVi_tab = np.delete(PosVi_tab,num-c,0)
+                #Supprime le rayon de la personne
+                r_bis.pop(num-c)
+                #Compte le nombre de personne supprimé ce pas de temps
+                c=c+1
+    #Actualise les listes de rayons et de nombre de particules
+    r=r_bis[:]
+    R=R+[r[:]]
     n_liste.append(n_inside)
     n = n_inside
+    #Compte le nombre de pas de temps
+    p=p+1
+    #Sauvegarde des nouvelles positions
+    savefile(PosVi_tab)
     
 # %% Représentation graphique
 
@@ -99,30 +110,33 @@ for i in t:
 tab_pos , tab_vitesse = readfile()
 
 #Définition de la figure
-fig=plt.figure(1)
+fig, ax = plt.subplots()
 fig.set_sizes=(10,10)
 
 #Visualisation des murs ?
 M=[0,10,10,0,0] ; N =[0,0,10,10,0]
 
 #Définition de l'axe
-ax = plt.axes(xlim=(-1, 11), ylim=(-1, 11))
+ax.axis('equal')
+ax.set(xlim=(-1, 11), ylim=(-1, 11))
+
+#Fonction d'initialisation
+def init():
+    pass
+    return
 
 A=np.zeros(n_liste[0]) # Sert à donner la bonne dimension a X,Y avant que les données soit introduites. Ne pas le faire pose des problèmes de dimension de R.
-
-#Définition des points représentant une personne
-scat = ax.scatter(A, A , s=R, facecolors='none', edgecolors='blue')
 
 #Plot de la figure
 plt.plot(M,N)
 
 #Animation
-ani = anim.FuncAnimation(fig, animate, frames=int(t_fin/dt), blit=True, 
-                             interval=10, repeat=False , save_count= int(t_fin/dt) , fargs = (tab_pos,dt,t_fin,scat,R,n_liste))
+ani = anim.FuncAnimation(fig, animate, frames=p, init_func= init, blit=False,save_count=p, 
+                             interval=100, repeat=False , fargs = (tab_pos,ax,R,n_liste))
 
-#Sauvegarde de l'animation en fichier .mp4
-ans_user = input('Sauvegarder animation ? y/n    ')
-if ans_user == 'y':
-    Writer = anim.writers['ffmpeg']
-    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-    ani.save('simulation.mp4', writer=writer)
+# #Sauvegarde de l'animation en fichier .mp4
+# ans_user = input('Sauvegarder animation ? y/n    ')
+# if ans_user == 'y':
+#     Writer = anim.writers['ffmpeg']
+#     writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+#     ani.save('simulation.mp4', writer=writer)
