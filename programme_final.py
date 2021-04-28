@@ -16,6 +16,10 @@ import matplotlib.animation as anim
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from matplotlib.artist import Artist
+
+random.seed(2021)
+rd.seed(2021)
 
 # %%initialisation
 
@@ -61,7 +65,7 @@ mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4
 centre=np.array([5,5])
 
 #Initialisation des particules
-PosVi_tab , classe_tab , r = initial(n,x=8,y=8)
+PosVi_tab , classe_tab , r = initial(n,x=9,y=9)
 
 #Sauvegarde des position initiales
 savefile(PosVi_tab)
@@ -104,6 +108,8 @@ while n!=0 and p*dt<=t_fin :
     #Sauvegarde des nouvelles positions
     savefile(PosVi_tab)
     
+print('Évacuation en {} s'.format(p*dt))
+    
 # %% Représentation graphique
 
 #Lecture des fichiers de positions au cours du temps
@@ -125,16 +131,20 @@ def init():
     pass
     return
 
-A=np.zeros(n_liste[0]) # Sert à donner la bonne dimension a X,Y avant que les données soit introduites. Ne pas le faire pose des problèmes de dimension de R.
+# L=[]
+# for i in range(p):
+#     s=str(i*dt)
+#     L=L+[plt.text(11,11,s)]
+#     Artist.set_visible(L[i], False)
 
 #Plot de la figure
 plt.plot(M,N)
 
 #Animation
 ani = anim.FuncAnimation(fig, animate, frames=p, init_func= init, blit=False,save_count=p, 
-                             interval=100, repeat=False , fargs = (tab_pos,ax,R,n_liste))
+                             interval=10, repeat=False , fargs = (tab_pos,ax,R,n_liste,dt,L))
 
-# #Sauvegarde de l'animation en fichier .mp4
+#Sauvegarde de l'animation en fichier .mp4
 # ans_user = input('Sauvegarder animation ? y/n    ')
 # if ans_user == 'y':
 #     Writer = anim.writers['ffmpeg']

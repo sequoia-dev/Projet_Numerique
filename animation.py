@@ -7,12 +7,16 @@ Animation de la simulation
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
+from matplotlib.artist import Artist
 # %% Définition de la fonction
 
-def animate(i,tab_pos,ax,R,n_liste):
+def animate(i,tab_pos,ax,R,n_liste,dt,L):
     """
     Fonction qui retire les persones affiché au temps t-dt et affiche celle au temps t
     """
+    # if i!=0 :
+    #     Artist.set_visible(L[i-1], False)
+    # Artist.set_visible(L[i], True)
     #Retire les anciens objets correspondant aux personnes au temps t-dt
     for obj in ax.findobj(match = type(plt.Circle(1, 1))):
         
@@ -21,6 +25,7 @@ def animate(i,tab_pos,ax,R,n_liste):
     M=tab_pos[int(np.sum(n_liste[0:i])):int(np.sum(n_liste[0:i]))+n_liste[i]]
     #Affiche un cercle pour représenter la personne. Sont centre est la postion de la
     #personne et son rayon est le rayon de la personne.
+    
     for u , j in enumerate(M):
         
         ax.add_artist(plt.Circle(j,radius=R[i][u],fill=False))

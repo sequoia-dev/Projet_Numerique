@@ -96,8 +96,8 @@ def initial(n,x,y,vm=7,r=0.3):
     Placement aléatoire de n personnes et affectation de leurs caractéristiques
     """
     PosVi_tab=rd.rand(n,2,2)
-    PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x+1
-    PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y+1
+    PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x+0.5
+    PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y+0.5
     classe_tab=[]
     R=[]
     
@@ -126,8 +126,8 @@ def initial(n,x,y,vm=7,r=0.3):
             if classe_tab[i].superpose(classe_tab[j]):
                 
                 a=a+1
-                classe_tab[i].x = rd.rand()*x+1
-                classe_tab[i].y = rd.rand()*y+1
+                classe_tab[i].x = rd.rand()*x+0.5
+                classe_tab[i].y = rd.rand()*y+0.5
         p=p+1
     
     if p==101 :
