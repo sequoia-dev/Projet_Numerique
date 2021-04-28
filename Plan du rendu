@@ -1,0 +1,43 @@
+
+Titre : Rapport de projet numérique : Modélisation de la sortie d'une foule d'une salle
+
+  Introduction
+   
+    Importation des librairies
+    
+    Variables d'entrées
+    
+    Variables de sortie
+    
+    La boucle temporel
+    
+   I. Les intéracrtions de personne à personne
+   
+    I.A. La classe personne
+    
+    I.B. Modèle newtonien d'interaction de personne à personne
+    
+    I.C. Second modèle de personne à personne
+    
+   II Les interactions avec les murs
+   
+    II.A. La classe mur
+    
+    II.B. L'interaction mur à particule
+    
+    II.C. Les sorties
+    
+   III L'intégrateur
+   
+    III.A. L'intégrateur pour le modèle newtonien d'interaction personne à personne
+    
+    III.B. L'intégrateur pour le second modèle d'interaction personne à personne
+    
+   Résultats
+   
+   Annexes
+   
+    A. L'animation
+    
+    B. La sauvegarde et la lecture des fichiers
+    
