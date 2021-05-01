@@ -16,12 +16,16 @@ import matplotlib.animation as anim
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import random
+import numpy.random as rd
 from matplotlib.artist import Artist
+
+# %%initialisation
+
+#Définition des seed pour la reproductibilité
 
 random.seed(2021)
 rd.seed(2021)
-
-# %%initialisation
 
 #Suppression des anciens fichiers
 ans_user = input('Voulez-vous supprimer les anciens fichiers de position ? y/n    ')
@@ -33,7 +37,7 @@ if ans_user == 'y':
 #interval de temps
 dt = 0.01
 #Nombre de particule
-n = 50
+n = 20
 
 #Définition des murs
 def f1(pers) :
@@ -65,7 +69,12 @@ mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4
 centre=np.array([5,5])
 
 #Initialisation des particules
-PosVi_tab , classe_tab , r = initial(n,x=9,y=9)
+#Particule qui seront en fait des obstacles
+poteau = np.array([personne(5,5,0,0,1,0,0)])
+#Nombre d'obstacle
+n_obstacle = len(poteau)
+#Particules à proprement parlé
+PosVi_tab , classe_tab , r = initial(n,8.5,8.5,poteau)
 
 #Sauvegarde des position initiales
 savefile(PosVi_tab)
@@ -79,16 +88,17 @@ R=[r]
 
 #Effectuer la simulation
 p=0
-while n!=0 and p*dt<=t_fin : 
+while n!=0 and p*dt<=t_fin :
+    n_tot = n + n_obstacle
     #Calcul des nouvelles positions
-    PosVi_tab = change_posvi(PosVi_tab,classe_tab,mur_class_tab,centre,dt,n)
+    PosVi_tab = change_posvi(PosVi_tab,classe_tab,mur_class_tab,centre,dt,n_tot)
     #Test de la distance à la sortie
     n_inside = n_liste[-1]
     r_bis=r[:]
     c=0
     for num , part in enumerate(classe_tab):
         for mur in mur_class_tab:
-            if mur.handle_part_exit(part) == True: #La personne sort
+            if mur.handle_part_exit(part) == True and part.v_max!=0: #La personne sort
                 n_inside = n_inside - 1
                 #Supprime la personne de classe_tab
                 classe_tab = np.delete(classe_tab,num-c)
@@ -98,7 +108,7 @@ while n!=0 and p*dt<=t_fin :
                 r_bis.pop(num-c)
                 #Compte le nombre de personne supprimé ce pas de temps
                 c=c+1
-    #Actualise les listes de rayons et de nombre de particules
+    #Actualise les listes de rayons et de nombre de particules    
     r=r_bis[:]
     R=R+[r[:]]
     n_liste.append(n_inside)
@@ -107,7 +117,6 @@ while n!=0 and p*dt<=t_fin :
     p=p+1
     #Sauvegarde des nouvelles positions
     savefile(PosVi_tab)
-    
 print('Évacuation en {} s'.format(p*dt))
     
 # %% Représentation graphique
@@ -126,25 +135,27 @@ M=[0,10,10,0,0] ; N =[0,0,10,10,0]
 ax.axis('equal')
 ax.set(xlim=(-1, 11), ylim=(-1, 11))
 
+L=[]
+for i in range(p):
+    s=str(i*dt)
+    L=L+[plt.text(11,11,s)]
+    Artist.set_visible(L[i], False)
+
 #Fonction d'initialisation
 def init():
     pass
     return
 
-# L=[]
-# for i in range(p):
-#     s=str(i*dt)
-#     L=L+[plt.text(11,11,s)]
-#     Artist.set_visible(L[i], False)
+A=np.zeros(n_liste[0]) # Sert à donner la bonne dimension a X,Y avant que les données soit introduites. Ne pas le faire pose des problèmes de dimension de R.
 
 #Plot de la figure
 plt.plot(M,N)
 
 #Animation
 ani = anim.FuncAnimation(fig, animate, frames=p, init_func= init, blit=False,save_count=p, 
-                             interval=10, repeat=False , fargs = (tab_pos,ax,R,n_liste,dt,L))
+                             interval=1000, repeat=False , fargs = (tab_pos,ax,R,n_liste,L,n_obstacle))
 
-#Sauvegarde de l'animation en fichier .mp4
+# #Sauvegarde de l'animation en fichier .mp4
 # ans_user = input('Sauvegarder animation ? y/n    ')
 # if ans_user == 'y':
 #     Writer = anim.writers['ffmpeg']

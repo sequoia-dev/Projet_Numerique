@@ -91,13 +91,14 @@ class personne:
         return vect_2
 # %% Définition de fonctions
 
-def initial(n,x,y,vm=7,r=0.3):
+def initial(n,x,y,poteau,vm=7,r=0.3):
     """
     Placement aléatoire de n personnes et affectation de leurs caractéristiques
+    en prenant en compte les poteaux
     """
     PosVi_tab=rd.rand(n,2,2)
-    PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x+0.5
-    PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y+0.5
+    PosVi_tab[:,0,0]=PosVi_tab[:,0,0]*x+1
+    PosVi_tab[:,0,1]=PosVi_tab[:,0,1]*y+1
     classe_tab=[]
     R=[]
     
@@ -109,6 +110,14 @@ def initial(n,x,y,vm=7,r=0.3):
         classe_tab=classe_tab+[personne(PosVi[0,0],PosVi[0,1],PosVi[1,0],PosVi[1,1],ri,v_max_i,num_part)]
     
     classe_tab=np.array(classe_tab)
+     
+    #Ajout des personnes poteaux
+    classe_tab = np.append(classe_tab,poteau)
+    for part in poteau:
+        PosVi_tab = np.append(PosVi_tab,[[part.x,part.y],[0,0]])
+        PosVi_tab = PosVi_tab.reshape(len(classe_tab),2,2)
+        R.append(part.r)
+    
     #Replacement des personnes qui se superposent
     ls = np.arange(0,len(classe_tab))
     couple = list(itertools.combinations(ls,2))
@@ -126,8 +135,8 @@ def initial(n,x,y,vm=7,r=0.3):
             if classe_tab[i].superpose(classe_tab[j]):
                 
                 a=a+1
-                classe_tab[i].x = rd.rand()*x+0.5
-                classe_tab[i].y = rd.rand()*y+0.5
+                classe_tab[i].x = rd.rand()*x+1
+                classe_tab[i].y = rd.rand()*y+1
         p=p+1
     
     if p==101 :
@@ -139,6 +148,32 @@ def initial(n,x,y,vm=7,r=0.3):
         PosVi_tab[num_pers,0,1]=pers.y
 
     return PosVi_tab , classe_tab , R
+
+# def personne_poteau(x,y,r, PosVi_tab , classe_tab , rayon_autre):
+#     """
+#     Ajoute une personne avec un rayon r au coordonées x,y immobile à classe_tab
+#     """
+#     part = personne(x, y, 0, 0, r, 0, len(classe_tab))
+#     classe_tab = np.append(classe_tab,personne(5,5,0,0,1,0,len(classe_tab)))
+#     PosVi_tab = np.append(PosVi_tab,[[5,5],[0,0]])
+#     PosVi_tab = PosVi_tab.reshape(len(classe_tab),2,2)
+#     rayon_autre.append(r)
+    
+#     return classe_tab , PosVi_tab , rayon_autre
+
+
+# def personne_poteau(x,y,r, PosVi_tab , classe_tab , rayon_autre):
+#     """
+#     Ajoute une personne avec un rayon r au coordonées x,y immobile à classe_tab
+#     """
+#     part = personne(x, y, 0, 0, r, 0, len(classe_tab))
+#     classe_tab = np.append(classe_tab,personne(x,y,0,0,r,0,len(classe_tab)))
+#     PosVi_tab = np.append(PosVi_tab,[[x,y],[0,0]])
+#     PosVi_tab = PosVi_tab.reshape(len(classe_tab),2,2)
+#     rayon_autre.append(r)
+    
+#     return classe_tab , PosVi_tab , rayon_autre
+    
 
 # %% Tests
 if __name__ == '__main__':
