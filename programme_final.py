@@ -39,42 +39,13 @@ dt = 0.01
 #Nombre de particule
 n = 20
 
-#Définition des murs
-def f1(pers) :
-    return pers.y + pers.r >= 10
-
-def f2(pers) :
-    return pers.y - pers.r <=0
-
-def f3(pers) :
-    return pers.x + pers.r >=10
-
-def f4(pers) :
-    return pers.x - pers.r <=0
-
-vect1=np.array([1,0])
-
-vect2=np.array([1,0])
-
-vect3=np.array([0,1])
-
-vect4=np.array([0,1])
-
-sortie1 = np.array([[5,6],[0,0.5]])
-sortie2 = np.array([[5,6],[9.5,10]])
-
-mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4)])
-
-#Définition du centre de la salle
-centre=np.array([5,5])
-
-#Initialisation des particules
+#Initialisation des personnes, des murs et des sorties
 #Particule qui seront en fait des obstacles
 poteau = np.array([personne(5,5,0,0,1,0,0)])
 #Nombre d'obstacle
 n_obstacle = len(poteau)
-#Particules à proprement parlé
-PosVi_tab , classe_tab , r = initial(n,8.5,8.5,poteau)
+#Particules à proprement parlé, murs et sorties
+PosVi_tab , classe_tab , r , mur_class_tab = initial(n,8.5,8.5,poteau)
 
 #Sauvegarde des position initiales
 savefile(PosVi_tab)
@@ -121,7 +92,7 @@ print('Évacuation en {} s'.format(p*dt))
     
 # %% Représentation graphique
 
-#Lecture des fichiers de positions au cours du temps
+#Transfert du fichier position en un tableau
 tab_pos , tab_vitesse = readfile()
 
 #Définition de la figure
@@ -146,8 +117,6 @@ def init():
     pass
     return
 
-A=np.zeros(n_liste[0]) # Sert à donner la bonne dimension a X,Y avant que les données soit introduites. Ne pas le faire pose des problèmes de dimension de R.
-
 #Plot de la figure
 plt.plot(M,N)
 
@@ -155,9 +124,9 @@ plt.plot(M,N)
 ani = anim.FuncAnimation(fig, animate, frames=p, init_func= init, blit=False,save_count=p, 
                              interval=1000, repeat=False , fargs = (tab_pos,ax,R,n_liste,L,n_obstacle))
 
-# #Sauvegarde de l'animation en fichier .mp4
-# ans_user = input('Sauvegarder animation ? y/n    ')
-# if ans_user == 'y':
-#     Writer = anim.writers['ffmpeg']
-#     writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-#     ani.save('simulation.mp4', writer=writer)
+#Sauvegarde de l'animation en fichier .mp4
+ans_user = input('Sauvegarder animation ? y/n    ')
+if ans_user == 'y':
+    Writer = anim.writers['ffmpeg']
+    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+    ani.save('simulation.mp4', writer=writer)

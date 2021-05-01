@@ -19,10 +19,36 @@ class personne:
     vitesse vx,vy
     vitesse maximum
     rayon r
-    numéro de particule
+    numéro de personne
     """
     def __init__(self,x,y,vx,vy,r,v_max,num):
-        """Définition des parametre initiaux"""
+        
+        """
+        
+        Définition de la personne.
+        
+        Parameters
+        ----------
+        x : Float
+            Coordonée x de la position de la personne.
+        y : Float
+            Coordonée y de la position de la personne.
+        vx : Float
+            Coordonée x de la vitesse de la personnes.
+        vy : Float
+            Coordonée y  de la vitesse de la personne.
+        r : Float
+            Rayon de la personne (celle-ci à une forme de cercle vu du dessus).
+        v_max : Float
+            Norme de la vitesse maximale atteignable par la personne.
+        num : Int
+            Numéro de la personne.
+
+        Returns
+        -------
+        None.
+
+        """
         self.x = x
         self.y = y
         self.vx = vx
@@ -146,8 +172,35 @@ def initial(n,x,y,poteau,vm=7,r=0.3):
         
         PosVi_tab[num_pers,0,0]=pers.x
         PosVi_tab[num_pers,0,1]=pers.y
+        
+    def f1(pers) :
+        return pers.y + pers.r >= 10
 
-    return PosVi_tab , classe_tab , R
+    def f2(pers) :
+        return pers.y - pers.r <=0
+
+    def f3(pers) :
+        return pers.x + pers.r >=10
+
+    def f4(pers) :
+        return pers.x - pers.r <=0
+
+    vect1=np.array([1,0])
+
+    vect2=np.array([1,0])
+
+    vect3=np.array([0,1])
+
+    vect4=np.array([0,1])
+
+    sortie1 = np.array([[5,6],[0,0.5]])
+    sortie2 = np.array([[5,6],[9.5,10]])
+
+    mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4)])
+
+    return PosVi_tab , classe_tab , R , mur_class_tab
+
+
 
 # def personne_poteau(x,y,r, PosVi_tab , classe_tab , rayon_autre):
 #     """
