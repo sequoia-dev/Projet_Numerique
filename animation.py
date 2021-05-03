@@ -27,8 +27,10 @@ def animate(i,tab_pos,ax,R,n_liste,L,n_obstacle):
     #Affiche un cercle pour représenter la personne. Sont centre est la postion de la
     #personne et son rayon est le rayon de la personne.
     for u , j in enumerate(M):
+        if u < len(M)-n_obstacle:
+            ax.add_artist(plt.Circle(j,radius=R[i][u],fill=False))
+        else : ax.add_artist(plt.Circle(j,radius=R[i][u],fill=True))
         
-        ax.add_artist(plt.Circle(j,radius=R[i][u],fill=False))
         
     return
 
