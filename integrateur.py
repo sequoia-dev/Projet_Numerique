@@ -134,7 +134,7 @@ def change_posvi(PosVi_tab,classe_tab,mur_class_tab,dt,n):
             pers.vy= V[num_pers,1]
     #Mise à jour de PosVi_tab
     X , V = np.reshape(X,(n,1,2)) , np.reshape(V,(n,1,2))
-    PosVi_tab = np.concatenate((X,V),axis=1) 
+    PosVi_tab = np.concatenate((X,V),axis=1)
     
     return PosVi_tab
 
