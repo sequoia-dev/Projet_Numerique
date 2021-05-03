@@ -146,8 +146,8 @@ def initial(n,x,y,poteau,Sim_forces,vm=7,r=0.3):
     classe_tab = np.append(classe_tab,poteau)
     for part in poteau:
         PosVi_tab = np.append(PosVi_tab,[[part.x,part.y],[0,0]])
-        PosVi_tab = PosVi_tab.reshape(len(classe_tab),2,2)
         R.append(part.r)
+    PosVi_tab = PosVi_tab.reshape(len(classe_tab),2,2)
     
     #Replacement des personnes qui se superposent
     ls = np.arange(0,len(classe_tab))
