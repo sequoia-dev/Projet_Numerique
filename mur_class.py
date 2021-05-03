@@ -47,6 +47,25 @@ class mur:
             if part.x >= self.sortie[0,0] and part.x <= self.sortie[0,1] and part.y >= self.sortie[1,0] and part.y <= self.sortie[1,1]:
                 return True
         else: return False
+        
+    def force_exit(self,particule):
+        """
+        Retourne la force qu'exerce la sortie sur une particule
+        """
+        
+        pos_sortie = [np.mean(self.sortie[0]) , np.mean(self.sortie[1])]
+        v = np.array([pos_sortie[0]-particule.x,pos_sortie[1]-particule.y])
+        norm_v = np.linalg.norm(v)
+        
+        if norm_v == 0:
+            F = np.array([0,0])
+            
+        else :
+            F = 10*v/norm_v
+            
+        return F
+    
+
 
 # %% Tests
 if __name__ == '__main__':

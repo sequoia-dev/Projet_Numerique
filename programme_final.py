@@ -12,6 +12,7 @@ from savetab import *
 from animation import *
 from integrateur import *
 from mur_class import *
+from integrateur_forces import *
 import matplotlib.animation as anim
 import matplotlib.pyplot as plt
 import numpy as np
@@ -38,15 +39,18 @@ if ans_user == 'y':
 dt = 0.01
 #Nombre de particule
 n = 20
-
+#Type de simulation
+Sim_forces =False # True pour du Newtonien, False sinon
 #Initialisation des personnes, des murs et des sorties
 #Particule qui seront en fait des obstacles
 poteau = np.array([personne(5,5,0,0,1,0,0)])
 #Nombre d'obstacle
 n_obstacle = len(poteau)
 #Particules à proprement parlé, murs et sorties
-PosVi_tab , classe_tab , r , mur_class_tab = initial(n,8.5,8.5,poteau)
-
+PosVi_tab , classe_tab , r , mur_class_tab = initial(n,8.5,8.5,poteau,Sim_forces)
+#Positions précedentes
+if Sim_forces:
+    PosViprec_tab = pos_ini(PosVi_tab,dt)
 #Sauvegarde des position initiales
 savefile(PosVi_tab)
 
@@ -62,7 +66,10 @@ p=0
 while n!=0 and p*dt<=t_fin :
     n_tot = n + n_obstacle
     #Calcul des nouvelles positions
-    PosVi_tab = change_posvi(PosVi_tab,classe_tab,mur_class_tab,centre,dt,n_tot)
+    if Sim_forces:
+        PosViprec_tab , PosVi_tab = change_posvi_forces(PosVi_tab,PosViprec_tab,classe_tab,mur_class_tab,dt,n_tot)
+    else:
+        PosVi_tab = change_posvi(PosVi_tab,classe_tab,mur_class_tab,dt,n_tot)
     #Test de la distance à la sortie
     n_inside = n_liste[-1]
     r_bis=r[:]
@@ -75,6 +82,8 @@ while n!=0 and p*dt<=t_fin :
                 classe_tab = np.delete(classe_tab,num-c)
                 #Supprime la ligne lié a la position de la personne
                 PosVi_tab = np.delete(PosVi_tab,num-c,0)
+                if Sim_forces:
+                    PosViprec_tab = np.delete(PosViprec_tab,num-c,0)
                 #Supprime le rayon de la personne
                 r_bis.pop(num-c)
                 #Compte le nombre de personne supprimé ce pas de temps
@@ -122,11 +131,11 @@ plt.plot(M,N)
 
 #Animation
 ani = anim.FuncAnimation(fig, animate, frames=p, init_func= init, blit=False,save_count=p, 
-                             interval=1000, repeat=False , fargs = (tab_pos,ax,R,n_liste,L,n_obstacle))
+                             interval=10, repeat=False , fargs = (tab_pos,ax,R,n_liste,L,n_obstacle))
 
 #Sauvegarde de l'animation en fichier .mp4
-ans_user = input('Sauvegarder animation ? y/n    ')
-if ans_user == 'y':
-    Writer = anim.writers['ffmpeg']
-    writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
-    ani.save('simulation.mp4', writer=writer)
+# ans_user = input('Sauvegarder animation ? y/n    ')
+# if ans_user == 'y':
+#     Writer = anim.writers['ffmpeg']
+#     writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+#     ani.save('simulation.mp4', writer=writer)

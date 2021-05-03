@@ -117,7 +117,7 @@ class personne:
         return vect_2
 # %% Définition de fonctions
 
-def initial(n,x,y,poteau,vm=7,r=0.3):
+def initial(n,x,y,poteau,Sim_forces,vm=7,r=0.3):
     """
     Placement aléatoire de n personnes et affectation de leurs caractéristiques
     en prenant en compte les poteaux
@@ -131,9 +131,14 @@ def initial(n,x,y,poteau,vm=7,r=0.3):
     for num_part , PosVi in enumerate(PosVi_tab):
         
         ri=np.absolute(np.random.normal(r,0.05))
-        v_max_i=np.absolute(np.random.normal(vm,0.8))
+        v_max=np.absolute(np.random.normal(vm,0.8))
         R.append(ri)
-        classe_tab=classe_tab+[personne(PosVi[0,0],PosVi[0,1],PosVi[1,0],PosVi[1,1],ri,v_max_i,num_part)]
+        f=PosVi[1,0]+PosVi[1,1]
+        
+        if  f > 1 : 
+            PosVi[1,0] , PosVi[1,1] = PosVi[1,0]/f , PosVi[1,1]/f
+        
+        classe_tab=classe_tab+[personne(PosVi[0,0],PosVi[0,1],PosVi[1,0]*v_max,PosVi[1,1]*v_max,ri,v_max,num_part)]
     
     classe_tab=np.array(classe_tab)
      
@@ -173,17 +178,21 @@ def initial(n,x,y,poteau,vm=7,r=0.3):
         PosVi_tab[num_pers,0,0]=pers.x
         PosVi_tab[num_pers,0,1]=pers.y
         
+    a=0
+    if Sim_forces:
+        a=0.2
+        
     def f1(pers) :
-        return pers.y + pers.r >= 10
+        return pers.y + (pers.r+a) >= 10
 
     def f2(pers) :
-        return pers.y - pers.r <=0
+        return pers.y - (pers.r+a) <=0 
 
     def f3(pers) :
-        return pers.x + pers.r >=10
+        return pers.x + (pers.r+a) >=10
 
     def f4(pers) :
-        return pers.x - pers.r <=0
+        return pers.x - (pers.r+a) <=0
 
     vect1=np.array([1,0])
 
@@ -199,6 +208,24 @@ def initial(n,x,y,poteau,vm=7,r=0.3):
     mur_class_tab=np.array([mur(f1,vect1,sortie1),mur(f2,vect2),mur(f3,vect3),mur(f4,vect4)])
 
     return PosVi_tab , classe_tab , R , mur_class_tab
+
+def change_v_part(vect,pers,PosVi):
+    """
+    Change la vitesse la particule en lui supprimant sa composante 
+    perpendiculaire à un obstacle (mur ou autre peronne).
+    """
+    
+    v = np.array([pers.vx , pers.vy])
+    v_prec = PosVi[1,:]
+    v_moy = (1/2)*( v_prec + v )
+    prod_sca = np.vdot(vect , v )
+    prod_sca_moy = np.vdot(vect , v_moy )
+    v_nouv = prod_sca * vect
+    v_nouv_moy = prod_sca_moy * vect
+    
+    return v_nouv , v_nouv_moy
+
+
 
 
 
